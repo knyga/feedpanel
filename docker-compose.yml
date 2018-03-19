@@ -1,9 +1,9 @@
-# compose config created for development purposes
+# compose config created for example purposes, not for production
 version: '3'
 services:
   api:
     image: node:carbon
-    command: npm start
+    command: npm run boot
     volumes:
      - ./:/app
     working_dir: /app

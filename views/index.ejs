@@ -9,7 +9,7 @@
         <tr>
             <td><a target="_blank" href="<%= item.thumb %>" /><img width="50" src="<%= item.thumbnail %>" /></a></td>
             <td><a target="_blank"href="<%= item.link %>" /><%= item.title %></a></td>
-            <td><%= item.description %></td>
+            <td><%- item.description %></td>
             <td><%= item.pubDate %></td>
         </tr>
         <% }); %>
