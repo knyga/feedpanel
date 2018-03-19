@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+</head>
+<body>
+<input type="url" placeholder="Feed URL" id="url"/>
+<button onclick="execute()">Add</button>
+<button onclick="clearAll()">Clear</button>
+<script>
+  function httpGetAsync(theUrl, callback) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function () {
+      if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+        callback(xmlHttp.responseText);
+    }
+    xmlHttp.open("GET", theUrl, true); // true for asynchronous
+    xmlHttp.send(null);
+  }
+
+  function isValidUrl(url) {
+    return /^(ftp|http|https):\/\/[^ "]+$/.test(url);
+  }
+
+  function execute() {
+    var feedUrl = document.getElementById('url').value;
+    if (isValidUrl(feedUrl)) {
+      httpGetAsync('/write?url='+feedUrl , function(data) {
+        var count = JSON.parse(data).count;
+        alert(count + ' items from feed ' + feedUrl + ' added');
+      });
+    } else {
+      alert('Wrong feed url format');
+    }
+  }
+
+  function clearAll() {
+    console.log('clear');
+    httpGetAsync('/clear' , function() {
+      alert('Feed cleaned');
+    });
+  }
+</script>
+</body>
+</html>

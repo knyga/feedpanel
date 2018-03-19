@@ -1,6 +1,23 @@
 <html>
 <body>
-
+    <table>
+        <tr>
+            <td>id</td>
+            <td>thumbnail</td>
+            <td>title</td>
+            <td>description</td>
+            <td>pubDate</td>
+        </tr>
+        <% items.forEach(function(item){ %>
+        <tr>
+            <td><%= item.id %></td>
+            <td><a target="_blank" href="<%= item.thumb %>" /><img width="50" src="<%= item.thumbnail %>" /></a></td>
+            <td><a target="_blank"href="<%= item.link %>" /><%= item.title %></a></td>
+            <td><%= item.description %></td>
+            <td><%= item.pubDate %></td>
+        </tr>
+        <% }); %>
+    </table>
 
 </body>
 </html>

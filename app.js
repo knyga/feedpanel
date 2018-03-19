@@ -10,17 +10,27 @@ const orm = require("orm");
     description: String,
     link: String,
     thumbnail: String,
+    pubDate: String,
   });
 
 
   app.set('view engine', 'ejs');
-  app.get('/', function (req, res) {
-    res.render('index');
+  app.get('/', async function (req, res) {
+    const items = await Feed.findAsync();
+    if(items && items.length) {
+      res.render('index', {items});
+    } else {
+      res.render('index-no-data');
+    }
   });
 
   app.get('/clear', async function(req, res) {
     await Feed.clear();
     res.send(200);
+  });
+
+  app.get('/admin', function(req, res) {
+    res.render('admin');
   });
 
   app.get('/write', async function (req, res) {
@@ -29,9 +39,10 @@ const orm = require("orm");
       timeout: 3000,
       gzip: true,
     };
+    let items = [];
 
     try {
-      const items = (await feedparser.parse(httpOptions)).map(item => {
+      items = (await feedparser.parse(httpOptions)).map(item => {
         const {title, description, link, image} = item;
         let thumbnail = '';
         let pubDate = '';
@@ -65,18 +76,22 @@ const orm = require("orm");
           thumbnail,
         };
       });
-
-      for(let i=0; i<items.length; i++) {
-        await Feed.createAsync(items[i]);
-      }
-
-      res.send(200);
     } catch(e) {
       res.send(500);
       console.log(e);
     }
 
+    let addedLength = items.length;
+    for(let i=0; i<items.length; i++) {
+      try {
+        await Feed.createAsync(items[i]);
+      } catch(e) {
+        console.log(e);
+        addedLength--;
+      }
+    }
 
+    res.send({count: addedLength});
   });
 
   app.listen(3000, () => console.log('App listening on port 3000!'));
