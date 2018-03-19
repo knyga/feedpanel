@@ -1,7 +1,12 @@
+# compose config created for development purposes
 version: '2'
 services:
   api:
-    image: node:latest
+    image: node:carbon
+    command: npm start
+    volumes:
+     - ./:/app
+    working_dir: /app
     ports:
      - "3000:3000"
     links:

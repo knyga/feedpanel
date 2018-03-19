@@ -1,32 +1,35 @@
 const express = require('express');
 const app = express();
 const feedparser = require('feedparser-promised');
-const orm = require("orm");
+const feedAsync = require("./models/feed.js");
+const {port, noImageUrl} = require('./consts/config.js');
 
 (async function() {
-  const db = await orm.connectAsync('mysql://root:root@localhost:3306/feed');
-  const Feed = db.define("feed", {
-    title: String,
-    description: String,
-    link: String,
-    thumbnail: String,
-    pubDate: String,
-  });
-
-
   app.set('view engine', 'ejs');
   app.get('/', async function (req, res) {
-    const items = await Feed.findAsync();
-    if(items && items.length) {
-      res.render('index', {items});
-    } else {
-      res.render('index-no-data');
+    try {
+      const Feed = await feedAsync();
+      const items = await Feed.findAsync();
+      if(items && items.length) {
+        res.render('index', {items});
+      } else {
+        res.render('index-no-data');
+      }
+    } catch(e) {
+      console.log(e);
+      res.send(500);
     }
   });
 
   app.get('/clear', async function(req, res) {
-    await Feed.clear();
-    res.send(200);
+    try {
+      const Feed = await feedAsync();
+      await Feed.clear();
+      res.send(200);
+    } catch(e) {
+      console.log(e);
+      res.send(500);
+    }
   });
 
   app.get('/admin', function(req, res) {
@@ -36,7 +39,7 @@ const orm = require("orm");
   app.get('/write', async function (req, res) {
     const httpOptions = {
       uri: req.query.url,
-      timeout: 3000,
+      timeout: 5000,
       gzip: true,
     };
     let items = [];
@@ -66,6 +69,10 @@ const orm = require("orm");
               thumbnail = mediaElement.url;
             }
           }
+
+          if(!thumbnail) {
+            thumbnail = noImageUrl;
+          }
         }
 
         return {
@@ -79,6 +86,17 @@ const orm = require("orm");
     } catch(e) {
       res.send(500);
       console.log(e);
+      return;
+    }
+
+    let Feed = null;
+
+    try {
+      Feed = await feedAsync();
+    } catch(e) {
+      res.send(500);
+      console.log(e);
+      return;
     }
 
     let addedLength = items.length;
@@ -94,5 +112,5 @@ const orm = require("orm");
     res.send({count: addedLength});
   });
 
-  app.listen(3000, () => console.log('App listening on port 3000!'));
+  app.listen(port, () => console.log(`App listening on port ${port}!`));
 })();
