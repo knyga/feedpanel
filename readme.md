@@ -1,0 +1,1 @@
+To start project execute `docker-compose up`
