@@ -19,7 +19,9 @@
     "ejs": "^2.5.7",
     "express": "^4.16.3",
     "feedparser-promised": "^1.5.0",
+    "js-yaml": "^3.11.0",
     "mysql": "^2.15.0",
-    "orm": "^4.0.2"
+    "orm": "^4.0.2",
+    "uglify-js": "^3.3.16"
   }
 }
