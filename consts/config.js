@@ -1,7 +1,7 @@
 module.exports = {
   db: {
     user: process.env.DB_USER || 'root',
-    host: process.env.DB_HOST || 'localhost',
+    host: process.env.DB_HOST || 'mysql',
     database: process.env.DB_DATABASE || 'feed',
     password: process.env.DB_PASSWORD || 'root',
     port: process.env.DB_PORT || 3306,

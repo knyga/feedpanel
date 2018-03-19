@@ -1,5 +1,5 @@
 # compose config created for development purposes
-version: '2'
+version: '3'
 services:
   api:
     image: node:carbon
@@ -13,11 +13,17 @@ services:
       - mysql
     depends_on:
       - mysql
+    networks:
+      - common
   mysql:
-   image: mysql:5.6
-   environment:
-     MYSQL_ROOT_PASSWORD: root
-   ports:
-     - 3306:3306
-   volumes:
-     - ./db-dump:/docker-entrypoint-initdb.d
+    image: mysql:5.6
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3306:3306
+    volumes:
+      - ./db-dump:/docker-entrypoint-initdb.d
+    networks:
+      - common
+networks:
+  common:
